@@ -5,11 +5,11 @@ const paginationPropTypes = {
     currentPage: PropTypes.number.isRequired,
     setCurrentPage: PropTypes.func.isRequired 
 }
-const currentPagesSearchesPropTypes = {
-    currentPagesSearches: PropTypes.array.isRequired 
+const currentSearchPagePropTypes = {
+    currentSearchPage: PropTypes.array.isRequired 
 }
 
 export default {
     paginationPropTypes,
-    currentPagesSearchesPropTypes
+    currentSearchPagePropTypes
 }

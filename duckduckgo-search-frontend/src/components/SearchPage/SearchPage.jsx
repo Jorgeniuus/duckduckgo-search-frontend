@@ -1,19 +1,19 @@
 import commonPropTypes from "../../modules/commonPropTypes"
 
-const PageSearches = (props) =>{
+const SearchPage = (props) =>{
     return(
         <section className='page-searches'>
-        {props.currentPagesSearches.map((searchResult, index) =>(
+        {props.currentSearchPage.map((searchResult, index) =>(
           <div key={index} className='search-result'>
             <a href={searchResult.url} target='_blank'>
               <h3>{searchResult.title}</h3>
             </a>
           </div>
         ))}
-
+        {props.children}
     </section>
     )
 }
 
-PageSearches.propTypes = commonPropTypes.currentPagesSearchesPropTypes  
-export default PageSearches
+SearchPage.propTypes = commonPropTypes.currentSearchPagePropTypes  
+export default SearchPage
