@@ -3,32 +3,32 @@ import api from '../../services/api'
 
 import './styleHome.css'
 
-function App() {
-  let [search, setSearche] = useState('')
+function Home() {
+  let [search, setSearch] = useState('')
   let [searches, setSearches] = useState([])
 
     async function getSearches(){
       try{
-        const searchesFromApi = await api.get(`/search?q=${search}`)
-    
-        setSearches(searchesFromApi.data)
+        const encodedSearch = encodeURIComponent(search);
+        const searchesFromApi = await api.get(`/search?q=${encodedSearch}`)
+
+        const validValues = []
+        searchesFromApi.data.forEach(item => {
+          if (item.title && item.title.length > 0) { 
+            validValues.push(item); 
+          }
+        });
+
+        setSearches(validValues)
       } catch (error) {
         console.error("Something went wrong: ", error);
       }
     } 
 
-    const handleInputChangeSearch = (e) => {
-      setSearche(e.target.data)
+    const handleInputChangeSearch = (event) => {
+      setSearch(event.target.value)
+      console.log("=== QUERY DA PESQUISA: === " +event.target.value)
     }
-
-    // useEffect(() => {
-    //   getSearches();
-    //   console.log(searches); 
-    // }, []);
-  
-    useEffect(() => {
-      console.log(searches);
-    }, [searches]);
 
   return (
     <div className='main-page'>
@@ -37,36 +37,23 @@ function App() {
         placeholder='Search...'
         value={search}
         onChange={handleInputChangeSearch}
-        onKeyDown={(e) => e.key === 'Enter' && handleInputChangeSearch()}
+        onKeyDown={(e) => e.key === 'Enter' && getSearches()}
         />
         <button onClick={getSearches}>Search</button>
       </nav>
+
       <div className='search-contents'>
+
         <section className='page-searches'>
-          <div className='search-result'>
-            <a href="https://www.google.com.br/" target='_blank'>
-              <h3>Testando 1</h3>
-            </a>
-          </div>
-          <div className='search-result'>
-            <a href="https://www.google.com.br/" target='_blank'>
-              <h3>Testando 2</h3>
-            </a>
-          </div>
-          <div className='search-result'>
-            <a href="https://www.google.com.br/" target='_blank'>
-              <h3>Testando 3</h3>
-            </a>
-          </div>
-          {/* {searches.map(searchResult =>(
-            <div key={'1'}>
-              <h3>{searchResult.Text}</h3>
-              <a href={searchResult.FirstURL} target='_blank'>
-                {searchResult.FirstURL}
+          {searches.map((searchResult, index) =>(
+            <div key={index} className='search-result'>
+              <a href={searchResult.url} target='_blank'>
+                <h3>{searchResult.title}</h3>
               </a>
             </div>
-          ))} */}
+          ))}
         </section>
+
         <aside className='side-history-bar'>
           <h2 className='search-history-text'>Search History</h2>
           <div className='history-result'>
@@ -80,9 +67,10 @@ function App() {
             </a>
           </div>
         </aside>
+
       </div>
     </div>
   )
 }
 
-export default App
+export default Home
