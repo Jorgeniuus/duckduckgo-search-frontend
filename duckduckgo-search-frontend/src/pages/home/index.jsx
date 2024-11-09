@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './styleHome.css'
 import api from '../../services/api'
 import Pagination from '../../components/pagination/pagination'
+import SearchPage from '../../components/SearchPage/SearchPage'
 
 function Home() {
   const [search, setSearch] = useState('')
@@ -13,14 +14,13 @@ function Home() {
   const pages = Math.ceil(searches.length / paginationPerPage)
   const startIndex = currentPage * paginationPerPage
   const endIndex = startIndex + paginationPerPage
-  const currentPagesSearches = searches.slice(startIndex, endIndex)
+  const currentSearchPage = searches.slice(startIndex, endIndex)
 
   async function getSearches(){
     try{
       const encodedSearch = encodeURIComponent(search);
       const searchesFromApi = await api.get(`/search?q=${encodedSearch}`)
 
-      // const validValues = searchesFromApi.data.filter(item => item.title && item.title.length > 0) 
       setSearches(searchesFromApi.data)
     } catch (error) {
       console.error("Something went wrong: ", error);
@@ -49,18 +49,9 @@ function Home() {
       </nav>
 
       <div className='search-contents'>
-
-        <section className='page-searches'>
-            {currentPagesSearches.map((searchResult, index) =>(
-              <div key={index} className='search-result'>
-                <a href={searchResult.url} target='_blank'>
-                  <h3>{searchResult.title}</h3>
-                </a>
-              </div>
-            ))}
-
-          <Pagination pages={pages} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
-        </section>
+        <SearchPage currentSearchPage={currentSearchPage}>
+          {<Pagination pages={pages} currentPage={currentPage} setCurrentPage={setCurrentPage}/>}
+        </SearchPage>
 
         <aside className='side-history-bar'>
           <h2 className='search-history-text'>Search History</h2>
