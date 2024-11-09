@@ -1,57 +1,65 @@
 import { useState, useEffect } from 'react'
-import api from '../../services/api'
-
 import './styleHome.css'
+import api from '../../services/api'
+import Pagination from '../../components/pagination/pagination'
 
 function Home() {
-  let [search, setSearch] = useState('')
-  let [searches, setSearches] = useState([])
+  const [search, setSearch] = useState('')
+  const [searches, setSearches] = useState([])
 
-    async function getSearches(){
-      try{
-        const encodedSearch = encodeURIComponent(search);
-        const searchesFromApi = await api.get(`/search?q=${encodedSearch}`)
+  const [paginationPerPage, setPaginationPerPage] = useState(4)
+  const [currentPage, setCurrentPage] = useState(0)
+  
+  const pages = Math.ceil(searches.length / paginationPerPage)
+  const startIndex = currentPage * paginationPerPage
+  const endIndex = startIndex + paginationPerPage
+  const currentPagesSearches = searches.slice(startIndex, endIndex)
 
-        const validValues = []
-        searchesFromApi.data.forEach(item => {
-          if (item.title && item.title.length > 0) { 
-            validValues.push(item); 
-          }
-        });
+  async function getSearches(){
+    try{
+      const encodedSearch = encodeURIComponent(search);
+      const searchesFromApi = await api.get(`/search?q=${encodedSearch}`)
 
-        setSearches(validValues)
-      } catch (error) {
-        console.error("Something went wrong: ", error);
-      }
-    } 
-
-    const handleInputChangeSearch = (event) => {
-      setSearch(event.target.value)
-      console.log("=== QUERY DA PESQUISA: === " +event.target.value)
+      // const validValues = searchesFromApi.data.filter(item => item.title && item.title.length > 0) 
+      setSearches(searchesFromApi.data)
+    } catch (error) {
+      console.error("Something went wrong: ", error);
     }
+  } 
+
+  useEffect(() => {
+    setCurrentPage(0)
+  }, [searches])
+
+  const handleInputChangeSearch = (event) => {
+    setSearch(event.target.value)
+    console.log("=== SEARCH QUERY: === " +event.target.value)
+  }
 
   return (
     <div className='main-page'>
-      <nav className='input-searches'>
+      <nav className='nav-input-searches'>
         <input type="text"
         placeholder='Search...'
         value={search}
         onChange={handleInputChangeSearch}
         onKeyDown={(e) => e.key === 'Enter' && getSearches()}
         />
-        <button onClick={getSearches}>Search</button>
+        <button className='button-search' onClick={getSearches}>Search</button>
       </nav>
 
       <div className='search-contents'>
 
         <section className='page-searches'>
-          {searches.map((searchResult, index) =>(
-            <div key={index} className='search-result'>
-              <a href={searchResult.url} target='_blank'>
-                <h3>{searchResult.title}</h3>
-              </a>
-            </div>
-          ))}
+            {currentPagesSearches.map((searchResult, index) =>(
+              <div key={index} className='search-result'>
+                <a href={searchResult.url} target='_blank'>
+                  <h3>{searchResult.title}</h3>
+                </a>
+              </div>
+            ))}
+
+          <Pagination pages={pages} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
         </section>
 
         <aside className='side-history-bar'>
@@ -67,7 +75,6 @@ function Home() {
             </a>
           </div>
         </aside>
-
       </div>
     </div>
   )

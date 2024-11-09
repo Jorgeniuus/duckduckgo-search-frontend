@@ -10,6 +10,9 @@
     height: 90%;
     margin: 0 0 0 50px;
 }
+button {
+    cursor: pointer;
+}
 /* SEARCH BAR */
 input{
     width: 700px;
@@ -17,14 +20,15 @@ input{
     height: 50px;
     border-radius: 30px 0 0 30px;
     margin-left: 300px;
+    font-size: 15px;
 }
-button{
+.button-search{
     border-radius: 0 30px 30px 0;
     color: white;
     width: 100px;
     background-color: #000003;
 }
-.input-searches{
+.nav-input-searches{
     display: flex;
     justify-content: left;
     width: 95%;
@@ -33,6 +37,7 @@ button{
 }
 /* BODY SEARCHES */
 .page-searches{
+    position: relative;
     padding-left: 20px;
     width: 920px;
     min-width: 920px;  
