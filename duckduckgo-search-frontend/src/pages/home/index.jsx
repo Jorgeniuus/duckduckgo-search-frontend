@@ -10,6 +10,7 @@ function Home() {
   const [currentPage, setCurrentPage] = useState(0)
   const [searchHistory, setSearchHistory] = useState([])
   
+  const searchHistoryStorage = "searchHistory"
   const paginationPerPage = 4
   const pages = Math.ceil(searches.length / paginationPerPage)
   const startIndex = currentPage * paginationPerPage
@@ -25,8 +26,19 @@ function Home() {
       setSearches(searchesFromApi.data)
       if(searchesFromApi.data.length > 0){
         setTimeout(() => {
-          setSearchHistory(prevHistory => [searchQuery, ...prevHistory])
+          addSearch(searchQuery)           
         }, 2000)
+
+        const addSearch = (newSearch) => {
+          const updatedHistory = [newSearch, ...searchHistory];
+
+          if (updatedHistory.length > 6) {
+            updatedHistory.pop();  
+          }
+          setSearchHistory(updatedHistory);
+          localStorage.setItem(searchHistoryStorage, JSON.stringify(updatedHistory));
+        };
+
       }
     } catch (error) {
       console.error("Something went wrong when making the GET request: ", error);
@@ -45,6 +57,10 @@ function Home() {
 
   useEffect(() => {
     setCurrentPage(0)
+    const getSearchHistory = localStorage.getItem(searchHistoryStorage)
+    if(getSearchHistory){
+      setSearchHistory(JSON.parse(getSearchHistory))
+    }
   }, [searches])
 
   const handleInputChangeSearch = (event) => {
@@ -71,7 +87,7 @@ function Home() {
 
         <aside className='side-history-bar'>
           <h2 className='search-history-title'>Search History</h2>
-            {searchHistory.slice(0, 6).map((history, index) => ( 
+            {searchHistory.map((history, index) => ( 
               <div key={index} className='history-content' onClick={() => postSearches(history)}>
                 <h3>{history}</h3>
               </div>
