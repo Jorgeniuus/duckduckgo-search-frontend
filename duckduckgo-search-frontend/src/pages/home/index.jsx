@@ -5,12 +5,12 @@ import Pagination from '../../components/pagination/pagination'
 import SearchPage from '../../components/SearchPage/SearchPage'
 
 function Home() {
-  const [search, setSearch] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   const [searches, setSearches] = useState([])
-
-  const [paginationPerPage, setPaginationPerPage] = useState(4)
   const [currentPage, setCurrentPage] = useState(0)
+  const [searchHistory, setSearchHistory] = useState([])
   
+  const paginationPerPage = 4
   const pages = Math.ceil(searches.length / paginationPerPage)
   const startIndex = currentPage * paginationPerPage
   const endIndex = startIndex + paginationPerPage
@@ -18,21 +18,37 @@ function Home() {
 
   async function getSearches(){
     try{
-      const encodedSearch = encodeURIComponent(search);
+      if(!searchQuery.length > 0 || searchQuery.trim() === "" ) return
+      const encodedSearch = encodeURIComponent(searchQuery);
       const searchesFromApi = await api.get(`/search?q=${encodedSearch}`)
 
       setSearches(searchesFromApi.data)
+      if(searchesFromApi.data.length > 0){
+        setTimeout(() => {
+          setSearchHistory(prevHistory => [searchQuery, ...prevHistory])
+        }, 2000)
+      }
     } catch (error) {
-      console.error("Something went wrong: ", error);
+      console.error("Something went wrong when making the GET request: ", error);
     }
   } 
+  async function postSearches(historyItem) {
+    try {
+        const response = await api.post('/search', {
+        query: historyItem,
+      });
+      setSearches(response.data); 
+    } catch (error) {
+      console.error("Something went wrong when making the POST request: ", error);
+    }
+  }
 
   useEffect(() => {
     setCurrentPage(0)
   }, [searches])
 
   const handleInputChangeSearch = (event) => {
-    setSearch(event.target.value)
+    setSearchQuery(event.target.value)
     console.log("=== SEARCH QUERY: === " +event.target.value)
   }
 
@@ -41,7 +57,7 @@ function Home() {
       <nav className='nav-input-searches'>
         <input type="text"
         placeholder='Search...'
-        value={search}
+        value={searchQuery}
         onChange={handleInputChangeSearch}
         onKeyDown={(e) => e.key === 'Enter' && getSearches()}
         />
@@ -54,17 +70,12 @@ function Home() {
         </SearchPage>
 
         <aside className='side-history-bar'>
-          <h2 className='search-history-text'>Search History</h2>
-          <div className='history-result'>
-            <a href="https://www.google.com.br/" target='_blank'>
-              <h3>Testando 1</h3> 
-            </a>
-          </div>
-          <div className='history-result'>
-            <a href="https://www.google.com.br/" target='_blank'>
-              <h3>Testando 1</h3> 
-            </a>
-          </div>
+          <h2 className='search-history-title'>Search History</h2>
+            {searchHistory.slice(0, 6).map((history, index) => ( 
+              <div key={index} className='history-content' onClick={() => postSearches(history)}>
+                <h3>{history}</h3>
+              </div>
+            ))}
         </aside>
       </div>
     </div>

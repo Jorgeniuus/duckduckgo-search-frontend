@@ -1,4 +1,5 @@
 import commonPropTypes from "../../modules/commonPropTypes"
+import './styleSearchPage.css'
 
 const SearchPage = (props) =>{
     return(
@@ -6,7 +7,7 @@ const SearchPage = (props) =>{
         {props.currentSearchPage.map((searchResult, index) =>(
           <div key={index} className='search-result'>
             <a href={searchResult.url} target='_blank'>
-              <h3>{searchResult.title}</h3>
+              <h2>{searchResult.title}</h2>
             </a>
           </div>
         ))}

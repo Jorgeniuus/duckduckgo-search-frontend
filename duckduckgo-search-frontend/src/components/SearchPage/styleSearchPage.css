@@ -1,0 +1,23 @@
+.page-searches{
+    position: relative;
+    padding-left: 20px;
+    width: 920px;
+    min-width: 920px;  
+    margin-left: 305px;
+    height: 98%;
+    margin-top: 18px;
+    background-color:#4d5794;
+}
+.search-result{
+    display: block;
+    background-color: #f9c3ff36;
+    padding-left: 20px;
+    margin-right: 20px;
+    height: 150px;    
+
+    h2{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
