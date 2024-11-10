@@ -1,13 +1,18 @@
 .main-page{
-    width: 100vw;
-    height: 100vh;
-    background-color: #1e2747;
+    display: flex;
+    justify-content: center;
+    width: 100vw;  
+    height: 100vh; 
+    margin: 0;
+    padding: 0;
 }
 .search-contents{
     display: flex;
     padding-top: 10px;
-    width: 95%;
-    height: 90%;
+    width: 90%;
+    max-width: 1200px;
+    height: 100%; 
+    max-height: 790px;
     margin: 0 0 0 50px;
 }
 button {
@@ -17,16 +22,22 @@ button {
 input{
     width: 700px;
     min-width: 300px;
-    height: 50px;
+    height: 30px;
     border-radius: 30px 0 0 30px;
     margin-left: 300px;
     font-size: 15px;
+    text-indent: 50px;
 }
 .button-search{
     border-radius: 0 30px 30px 0;
-    color: white;
+    color: #180b08;
     width: 100px;
-    background-color: #000003;
+    background-color: #73768e;
+
+    &:hover{
+        background-color: #180b08;  
+        color: #f9f9f9;
+    }
 }
 .nav-input-searches{
     display: flex;

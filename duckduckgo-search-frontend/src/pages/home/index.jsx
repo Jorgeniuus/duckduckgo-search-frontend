@@ -22,8 +22,7 @@ function Home() {
   async function getSearches(){
     try{
       if(!searchQuery.trim()) return
-      const encodedSearch = encodeURIComponent(searchQuery);
-      const searchesFromApi = await api.get(`/search?q=${encodedSearch}`)
+      const searchesFromApi = await api.get(`/search?q=${searchQuery}`)
 
       setSearches(searchesFromApi.data)
 
@@ -73,22 +72,24 @@ function Home() {
 
   return (
     <div className='main-page'>
-      <nav className='nav-input-searches'>
-        <input type="text"
-        placeholder='Search...'
-        value={searchQuery}
-        onChange={handleInputChangeSearch}
-        onKeyDown={(e) => e.key === 'Enter' && getSearches()}
-        />
-        <button className='button-search' onClick={getSearches}>Search</button>
-      </nav>
+      <div>
+        <nav className='nav-input-searches'>
+          <input type="text"
+          placeholder='Search...'
+          value={searchQuery}
+          onChange={handleInputChangeSearch}
+          onKeyDown={(e) => e.key === 'Enter' && getSearches()}
+          />
+          <button className='button-search' onClick={getSearches}>Search</button>
+        </nav>
 
-      <div className='search-contents'>
-        <SearchPage currentSearchPage={currentSearchPage}>
-          {<Pagination pages={pages} currentPage={currentPage} setCurrentPage={setCurrentPage}/>}
-        </SearchPage>
-        
-        <Sidebar searchHistory={searchHistory} postSearches={postSearches}/>
+        <div className='search-contents'>
+          <SearchPage currentSearchPage={currentSearchPage}>
+            {<Pagination pages={pages} currentPage={currentPage} setCurrentPage={setCurrentPage}/>}
+          </SearchPage>
+          
+          <Sidebar searchHistory={searchHistory} postSearches={postSearches}/>
+        </div>
       </div>
     </div>
   )
