@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react'
 import './styleHome.css'
 import api from '../../services/api'
 import Pagination from '../../components/pagination/pagination'
-import SearchPage from '../../components/SearchPage/SearchPage'
+import SearchPage from '../../components/searchPage/SearchPage'
+import Sidebar from '../../components/sidebar/Sidebar'
+
+const searchHistoryStorage = "searchHistory"
+const paginationPerPage = 4
 
 function Home() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -10,8 +14,6 @@ function Home() {
   const [currentPage, setCurrentPage] = useState(0)
   const [searchHistory, setSearchHistory] = useState([])
   
-  const searchHistoryStorage = "searchHistory"
-  const paginationPerPage = 4
   const pages = Math.ceil(searches.length / paginationPerPage)
   const startIndex = currentPage * paginationPerPage
   const endIndex = startIndex + paginationPerPage
@@ -19,26 +21,14 @@ function Home() {
 
   async function getSearches(){
     try{
-      if(!searchQuery.length > 0 || searchQuery.trim() === "" ) return
+      if(!searchQuery.trim()) return
       const encodedSearch = encodeURIComponent(searchQuery);
       const searchesFromApi = await api.get(`/search?q=${encodedSearch}`)
 
       setSearches(searchesFromApi.data)
+
       if(searchesFromApi.data.length > 0){
-        setTimeout(() => {
-          addSearch(searchQuery)           
-        }, 2000)
-
-        const addSearch = (newSearch) => {
-          const updatedHistory = [newSearch, ...searchHistory];
-
-          if (updatedHistory.length > 6) {
-            updatedHistory.pop();  
-          }
-          setSearchHistory(updatedHistory);
-          localStorage.setItem(searchHistoryStorage, JSON.stringify(updatedHistory));
-        };
-
+        addSearch(searchQuery)           
       }
     } catch (error) {
       console.error("Something went wrong when making the GET request: ", error);
@@ -55,13 +45,26 @@ function Home() {
     }
   }
 
+  const addSearch = (newSearch) => {
+    const updatedHistory = [newSearch, ...searchHistory];
+
+    if (updatedHistory.length > 6) {
+      updatedHistory.pop();  
+    }
+    setSearchHistory(updatedHistory);
+    localStorage.setItem(searchHistoryStorage, JSON.stringify(updatedHistory));
+  };
+
   useEffect(() => {
     setCurrentPage(0)
+  }, [searches])
+
+  useEffect(() => {
     const getSearchHistory = localStorage.getItem(searchHistoryStorage)
     if(getSearchHistory){
       setSearchHistory(JSON.parse(getSearchHistory))
     }
-  }, [searches])
+  }, [])
 
   const handleInputChangeSearch = (event) => {
     setSearchQuery(event.target.value)
@@ -84,15 +87,8 @@ function Home() {
         <SearchPage currentSearchPage={currentSearchPage}>
           {<Pagination pages={pages} currentPage={currentPage} setCurrentPage={setCurrentPage}/>}
         </SearchPage>
-
-        <aside className='side-history-bar'>
-          <h2 className='search-history-title'>Search History</h2>
-            {searchHistory.map((history, index) => ( 
-              <div key={index} className='history-content' onClick={() => postSearches(history)}>
-                <h3>{history}</h3>
-              </div>
-            ))}
-        </aside>
+        
+        <Sidebar searchHistory={searchHistory} postSearches={postSearches}/>
       </div>
     </div>
   )

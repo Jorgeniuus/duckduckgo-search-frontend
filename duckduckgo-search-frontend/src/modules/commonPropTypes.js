@@ -8,8 +8,12 @@ const paginationPropTypes = {
 const currentSearchPagePropTypes = {
     currentSearchPage: PropTypes.array.isRequired 
 }
-
+const sidebar = {
+    searchHistory: PropTypes.array.isRequired,
+    postSearches: PropTypes.func.isRequired
+}
 export default {
     paginationPropTypes,
-    currentSearchPagePropTypes
+    currentSearchPagePropTypes,
+    sidebar
 }
