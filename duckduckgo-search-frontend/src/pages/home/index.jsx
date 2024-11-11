@@ -2,70 +2,134 @@ import { useState, useEffect } from 'react'
 import './styleHome.css'
 import api from '../../services/api'
 import Pagination from '../../components/pagination/pagination'
-import SearchPage from '../../components/SearchPage/SearchPage'
+import SearchPage from '../../components/searchPage/SearchPage'
+import Sidebar from '../../components/sidebar/Sidebar'
+import InputSearches from '../../components/inputSearches/InputSearches'
+import InputSearchHighlight from '../../components/searchHighlight/SearchHighlight'
+
+const searchHistoryStorage = "searchHistory"
+const paginationPerPage = 4
 
 function Home() {
-  const [search, setSearch] = useState('')
+  const [findTerm, setFindTerm] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   const [searches, setSearches] = useState([])
-
-  const [paginationPerPage, setPaginationPerPage] = useState(4)
+  const [searchHistory, setSearchHistory] = useState([])
+  const [suggestions, setSuggestions] = useState([])
   const [currentPage, setCurrentPage] = useState(0)
+  const [isTyping, setIsTyping] = useState(false)
   
   const pages = Math.ceil(searches.length / paginationPerPage)
   const startIndex = currentPage * paginationPerPage
   const endIndex = startIndex + paginationPerPage
   const currentSearchPage = searches.slice(startIndex, endIndex)
 
+  const lowerCaseSearch = searchQuery.toLowerCase() 
+
   async function getSearches(){
     try{
-      const encodedSearch = encodeURIComponent(search);
-      const searchesFromApi = await api.get(`/search?q=${encodedSearch}`)
+      if(!searchQuery.trim()) return
+      setIsTyping(false)
+      const searchesFromApi = await api.get(`/search?q=${searchQuery}`)
 
       setSearches(searchesFromApi.data)
+      if(searchesFromApi.data.length > 0){
+        addSearch(searchQuery)           
+      }
     } catch (error) {
-      console.error("Something went wrong: ", error);
+      console.error("Something went wrong when making the GET request: ", error);
     }
   } 
+  async function getSuggestions(queryLetters){
+    try{
+      if(!queryLetters.trim()) return
+      const searchesFromApi = await api.get(`/search?q=${queryLetters}`)
 
+      const filteredSearchSuggestions = searchesFromApi.data
+      .filter(item => item.title && item.title.toLowerCase()
+      .startsWith(lowerCaseSearch)).map(item => item.title.split(" ")[0]); 
+
+      setSuggestions(filteredSearchSuggestions)
+    } catch (error) {
+      console.error("Something went wrong when making the GET request: ", error);
+    }
+  } 
+  async function postSearches(historyItem) {
+    try {
+        const response = await api.post('/search', {
+        query: historyItem,
+      });
+      setSearches(response.data); 
+    } catch (error) {
+      console.error("Something went wrong when making the POST request: ", error);
+    }
+  }
+
+  const addSearch = (newSearch) => {
+    const updatedHistory = [newSearch, ...searchHistory];
+
+    if (updatedHistory.length > 6) {
+      updatedHistory.pop();  
+    }
+    setSearchHistory(updatedHistory);
+    localStorage.setItem(searchHistoryStorage, JSON.stringify(updatedHistory));
+  };
+  
   useEffect(() => {
     setCurrentPage(0)
   }, [searches])
 
+  useEffect(() => {
+    const getSearchHistory = localStorage.getItem(searchHistoryStorage)
+
+    if(getSearchHistory){
+      setSearchHistory(JSON.parse(getSearchHistory))
+    }
+  }, [])
+
   const handleInputChangeSearch = (event) => {
-    setSearch(event.target.value)
-    console.log("=== SEARCH QUERY: === " +event.target.value)
+    setSearchQuery(event.target.value)
+    getSuggestions(event.target.value)
+    setIsTyping(true)
+  }
+  const handleInputClickSuggetions = (suggestion) => {
+    setSearchQuery(suggestion)
+    setIsTyping(false)
+    getSearches()
   }
 
   return (
     <div className='main-page'>
-      <nav className='nav-input-searches'>
-        <input type="text"
-        placeholder='Search...'
-        value={search}
-        onChange={handleInputChangeSearch}
-        onKeyDown={(e) => e.key === 'Enter' && getSearches()}
+      <div>
+        <InputSearchHighlight 
+          currentSearchPage={currentSearchPage} 
+          findTerm={findTerm}
+          setFindTerm={setFindTerm}
         />
-        <button className='button-search' onClick={getSearches}>Search</button>
-      </nav>
 
-      <div className='search-contents'>
-        <SearchPage currentSearchPage={currentSearchPage}>
-          {<Pagination pages={pages} currentPage={currentPage} setCurrentPage={setCurrentPage}/>}
-        </SearchPage>
-
-        <aside className='side-history-bar'>
-          <h2 className='search-history-text'>Search History</h2>
-          <div className='history-result'>
-            <a href="https://www.google.com.br/" target='_blank'>
-              <h3>Testando 1</h3> 
-            </a>
-          </div>
-          <div className='history-result'>
-            <a href="https://www.google.com.br/" target='_blank'>
-              <h3>Testando 1</h3> 
-            </a>
-          </div>
-        </aside>
+        <InputSearches 
+          searchQuery={searchQuery}
+          handleInputChangeSearch={handleInputChangeSearch} 
+          getSearches={getSearches} 
+          isTyping={isTyping} 
+          suggestions={suggestions} 
+          handleInputClickSuggetions={handleInputClickSuggetions}
+        />
+        
+        <div className='search-contents'>
+          <SearchPage currentSearchPage={currentSearchPage} findTerm={findTerm}>
+            {<Pagination 
+              pages={pages} 
+              currentPage={currentPage} 
+              setCurrentPage={setCurrentPage}
+            />}
+          </SearchPage>
+          
+          <Sidebar 
+            searchHistory={searchHistory} 
+            postSearches={postSearches}
+          />
+        </div>
       </div>
     </div>
   )

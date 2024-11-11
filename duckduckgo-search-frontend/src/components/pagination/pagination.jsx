@@ -4,12 +4,12 @@ import commonPropTypes from "../../modules/commonPropTypes"
 const Pagination = (props) =>{
     return(
         <nav className='nav-pagination'>
-            <ul>
+            <ul className='ul-pagination'>
             {Array.from(Array(props.pages), (item, index) => {
                 return (
                     <li key={index}>
                         <button
-                            style={index === props.currentPage ? {backgroundColor: "#1e2747", color: "#fff"} : {backgroundColor: "#fff", color: "#000"}}
+                            style={index === props.currentPage ? {backgroundColor: "#180b08", color: "#f9f9f9"} : null}
                             className='button-pagination' 
                             value={index}
                             onClick={(event) => props.setCurrentPage(Number(event.target.value))}>{index + 1}
