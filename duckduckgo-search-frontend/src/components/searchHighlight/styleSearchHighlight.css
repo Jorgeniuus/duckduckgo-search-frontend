@@ -1,0 +1,36 @@
+.input-highlight{
+    margin: 50.1px 0 0 100px;
+    position: absolute;
+
+    input{
+        border-radius: 10px 10px;
+        text-indent: 10px;
+        width: 172px;
+        height: 30px;
+        padding-right: 70px;
+    }
+
+    p{
+        font-size: 30px;
+    }
+}
+.lorem{
+    margin-left: 350px;
+    margin-top: 100px;
+    position: absolute;
+    z-index: 99;
+    text-align: center;
+}
+.span-highlight{
+    background-Color: yellow;
+}
+.occurence-count{
+    position: absolute;
+    right : 10px;
+    top: 50%;
+    font-size: 14px;
+    padding-left: 1px;
+    padding-right: 5px;
+    transform: translateY(-50%);    
+    border-left: 1.5px solid #73768e;
+}

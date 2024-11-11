@@ -4,17 +4,20 @@ import api from '../../services/api'
 import Pagination from '../../components/pagination/pagination'
 import SearchPage from '../../components/searchPage/SearchPage'
 import Sidebar from '../../components/sidebar/Sidebar'
+import InputSearches from '../../components/inputSearches/InputSearches'
+import InputSearchHighlight from '../../components/searchHighlight/SearchHighlight'
 
 const searchHistoryStorage = "searchHistory"
 const paginationPerPage = 4
 
 function Home() {
+  const [findTerm, setFindTerm] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [searches, setSearches] = useState([])
-  const [currentPage, setCurrentPage] = useState(0)
   const [searchHistory, setSearchHistory] = useState([])
-  const [isTyping, setIsTyping] = useState(false)
   const [suggestions, setSuggestions] = useState([])
+  const [currentPage, setCurrentPage] = useState(0)
+  const [isTyping, setIsTyping] = useState(false)
   
   const pages = Math.ceil(searches.length / paginationPerPage)
   const startIndex = currentPage * paginationPerPage
@@ -37,10 +40,10 @@ function Home() {
       console.error("Something went wrong when making the GET request: ", error);
     }
   } 
-  async function getSuggestions(letterByLetter){
+  async function getSuggestions(queryLetters){
     try{
-      if(!letterByLetter.trim()) return
-      const searchesFromApi = await api.get(`/search?q=${letterByLetter}`)
+      if(!queryLetters.trim()) return
+      const searchesFromApi = await api.get(`/search?q=${queryLetters}`)
 
       const filteredSearchSuggestions = searchesFromApi.data
       .filter(item => item.title && item.title.toLowerCase()
@@ -78,6 +81,7 @@ function Home() {
 
   useEffect(() => {
     const getSearchHistory = localStorage.getItem(searchHistoryStorage)
+
     if(getSearchHistory){
       setSearchHistory(JSON.parse(getSearchHistory))
     }
@@ -87,7 +91,6 @@ function Home() {
     setSearchQuery(event.target.value)
     getSuggestions(event.target.value)
     setIsTyping(true)
-    console.log("=== SEARCH QUERY: === " +event.target.value)
   }
   const handleInputClickSuggetions = (suggestion) => {
     setSearchQuery(suggestion)
@@ -98,34 +101,34 @@ function Home() {
   return (
     <div className='main-page'>
       <div>
-        <nav className='nav-input-searches'>
-          <input className='input-search' type="text"
-          placeholder='Search...'
-          value={searchQuery}
-          onChange={handleInputChangeSearch}
-          onKeyDown={(e) => e.key === 'Enter' && getSearches()}
-          />
-          <button className='button-search' onClick={getSearches}>Search</button>
-          {isTyping?
-            (
-              <div className='search-suggestions'>
-                  <ul>
-                {suggestions.map((suggestion, index) => (
-                    <div key={index} onClick={() => handleInputClickSuggetions(suggestion)}>
-                      <li>{suggestion}</li>
-                    </div>
-                  ))}
-                </ul>
-              </div>
-            ): null}
-        </nav>
+        <InputSearchHighlight 
+          currentSearchPage={currentSearchPage} 
+          findTerm={findTerm}
+          setFindTerm={setFindTerm}
+        />
 
+        <InputSearches 
+          searchQuery={searchQuery}
+          handleInputChangeSearch={handleInputChangeSearch} 
+          getSearches={getSearches} 
+          isTyping={isTyping} 
+          suggestions={suggestions} 
+          handleInputClickSuggetions={handleInputClickSuggetions}
+        />
+        
         <div className='search-contents'>
-          <SearchPage currentSearchPage={currentSearchPage}>
-            {<Pagination pages={pages} currentPage={currentPage} setCurrentPage={setCurrentPage}/>}
+          <SearchPage currentSearchPage={currentSearchPage} findTerm={findTerm}>
+            {<Pagination 
+              pages={pages} 
+              currentPage={currentPage} 
+              setCurrentPage={setCurrentPage}
+            />}
           </SearchPage>
           
-          <Sidebar searchHistory={searchHistory} postSearches={postSearches}/>
+          <Sidebar 
+            searchHistory={searchHistory} 
+            postSearches={postSearches}
+          />
         </div>
       </div>
     </div>
