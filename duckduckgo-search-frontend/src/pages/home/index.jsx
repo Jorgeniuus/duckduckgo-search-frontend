@@ -34,7 +34,7 @@ function Home() {
 
       setSearches(searchesFromApi.data)
       if(searchesFromApi.data.length > 0){
-        addSearch(searchQuery)           
+        addToSearchHistory(searchQuery)           
       }
     } catch (error) {
       console.error("Something went wrong when making the GET request: ", error);
@@ -65,7 +65,12 @@ function Home() {
     }
   }
 
-  const addSearch = (newSearch) => {
+  const addToSearchHistory = (newSearch) => {
+    if(searchHistory.includes(newSearch)){
+      const index = searchHistory.indexOf(newSearch)
+      searchHistory.splice(index, 1)
+    }
+
     const updatedHistory = [newSearch, ...searchHistory];
 
     if (updatedHistory.length > 6) {
