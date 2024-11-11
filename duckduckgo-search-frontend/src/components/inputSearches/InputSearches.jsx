@@ -27,4 +27,4 @@ export default function InputSearches(props){
     )
 }
 
-InputSearches.propTypes = commonPropTypes.inputSearches  
+InputSearches.propTypes = commonPropTypes.inputSearchesPropTypes  

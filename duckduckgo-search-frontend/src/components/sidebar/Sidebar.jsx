@@ -14,4 +14,4 @@ export default function Sidebar(props){
     )
 }
 
-Sidebar.propTypes = commonPropTypes.sidebar
+Sidebar.propTypes = commonPropTypes.sidebarPropTypes

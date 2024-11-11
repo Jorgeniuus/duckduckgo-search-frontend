@@ -8,11 +8,11 @@ const paginationPropTypes = {
 const currentSearchPagePropTypes = {
     currentSearchPage: PropTypes.array.isRequired 
 }
-const sidebar = {
+const sidebarPropTypes = {
     searchHistory: PropTypes.array.isRequired,
     postSearches: PropTypes.func.isRequired
 }
-const inputSearches = {
+const inputSearchesPropTypes = {
     searchQuery: PropTypes.string.isRequired,
     suggestions: PropTypes.array.isRequired,
     getSearches: PropTypes.func.isRequired,
@@ -20,16 +20,16 @@ const inputSearches = {
     handleInputChangeSearch: PropTypes.func.isRequired,
     handleInputClickSuggetions: PropTypes.func
 }
-const searchHighlight = {
-    array: PropTypes.array,
-    string: PropTypes.string, 
-    func: PropTypes.func
+const searchHighlightPropTypes = {
+    currentSearchPage: PropTypes.array,
+    findTerm: PropTypes.string, 
+    setFindTerm: PropTypes.func
 }
 
 export default {
     paginationPropTypes,
     currentSearchPagePropTypes,
-    sidebar,
-    inputSearches,
-    searchHighlight
+    sidebarPropTypes,
+    inputSearchesPropTypes,
+    searchHighlightPropTypes
 }
