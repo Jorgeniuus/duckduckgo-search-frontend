@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import './styleHome.css'
 import api from '../../services/api'
 import Pagination from '../../components/pagination/pagination'
-import SearchPage from '../../components/searchPage/SearchPage'
+import ContentPage from '../../components/contentPage/ContentPage'
 import Sidebar from '../../components/sidebar/Sidebar'
 import InputSearches from '../../components/inputSearches/InputSearches'
 import InputSearchHighlight from '../../components/searchHighlight/SearchHighlight'
@@ -117,13 +117,13 @@ function Home() {
         />
         
         <div className='search-contents'>
-          <SearchPage currentSearchPage={currentSearchPage} findTerm={findTerm}>
+          <ContentPage currentSearchPage={currentSearchPage} findTerm={findTerm}>
             {<Pagination 
               pages={pages} 
               currentPage={currentPage} 
               setCurrentPage={setCurrentPage}
             />}
-          </SearchPage>
+          </ContentPage>
           
           <Sidebar 
             searchHistory={searchHistory} 
