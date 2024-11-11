@@ -4,7 +4,7 @@ import commonPropTypes from "../../modules/commonPropTypes"
 const Pagination = (props) =>{
     return(
         <nav className='nav-pagination'>
-            <ul>
+            <ul className='ul-pagination'>
             {Array.from(Array(props.pages), (item, index) => {
                 return (
                     <li key={index}>

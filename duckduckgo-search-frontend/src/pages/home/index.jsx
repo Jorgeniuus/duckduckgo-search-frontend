@@ -13,22 +13,40 @@ function Home() {
   const [searches, setSearches] = useState([])
   const [currentPage, setCurrentPage] = useState(0)
   const [searchHistory, setSearchHistory] = useState([])
+  const [isTyping, setIsTyping] = useState(false)
+  const [suggestions, setSuggestions] = useState([])
   
   const pages = Math.ceil(searches.length / paginationPerPage)
   const startIndex = currentPage * paginationPerPage
   const endIndex = startIndex + paginationPerPage
   const currentSearchPage = searches.slice(startIndex, endIndex)
 
+  const lowerCaseSearch = searchQuery.toLowerCase() 
+
   async function getSearches(){
     try{
       if(!searchQuery.trim()) return
+      setIsTyping(false)
       const searchesFromApi = await api.get(`/search?q=${searchQuery}`)
 
       setSearches(searchesFromApi.data)
-
       if(searchesFromApi.data.length > 0){
         addSearch(searchQuery)           
       }
+    } catch (error) {
+      console.error("Something went wrong when making the GET request: ", error);
+    }
+  } 
+  async function getSuggestions(letterByLetter){
+    try{
+      if(!letterByLetter.trim()) return
+      const searchesFromApi = await api.get(`/search?q=${letterByLetter}`)
+
+      const filteredSearchSuggestions = searchesFromApi.data
+      .filter(item => item.title && item.title.toLowerCase()
+      .startsWith(lowerCaseSearch)).map(item => item.title.split(" ")[0]); 
+
+      setSuggestions(filteredSearchSuggestions)
     } catch (error) {
       console.error("Something went wrong when making the GET request: ", error);
     }
@@ -53,7 +71,7 @@ function Home() {
     setSearchHistory(updatedHistory);
     localStorage.setItem(searchHistoryStorage, JSON.stringify(updatedHistory));
   };
-
+  
   useEffect(() => {
     setCurrentPage(0)
   }, [searches])
@@ -67,20 +85,39 @@ function Home() {
 
   const handleInputChangeSearch = (event) => {
     setSearchQuery(event.target.value)
+    getSuggestions(event.target.value)
+    setIsTyping(true)
     console.log("=== SEARCH QUERY: === " +event.target.value)
+  }
+  const handleInputClickSuggetions = (suggestion) => {
+    setSearchQuery(suggestion)
+    setIsTyping(false)
+    getSearches()
   }
 
   return (
     <div className='main-page'>
       <div>
         <nav className='nav-input-searches'>
-          <input type="text"
+          <input className='input-search' type="text"
           placeholder='Search...'
           value={searchQuery}
           onChange={handleInputChangeSearch}
           onKeyDown={(e) => e.key === 'Enter' && getSearches()}
           />
           <button className='button-search' onClick={getSearches}>Search</button>
+          {isTyping?
+            (
+              <div className='search-suggestions'>
+                  <ul>
+                {suggestions.map((suggestion, index) => (
+                    <div key={index} onClick={() => handleInputClickSuggetions(suggestion)}>
+                      <li>{suggestion}</li>
+                    </div>
+                  ))}
+                </ul>
+              </div>
+            ): null}
         </nav>
 
         <div className='search-contents'>
