@@ -19,7 +19,7 @@ async function getSearchesData(searchQuery, setSearches){
     try{
       if(!partialQuery.trim()) return
       const searchesFromApi = await duckDuckGoAPI.get(`/suggestion?q=${partialQuery}`)
-      console.log(searchesFromApi.data)
+      
       const filteredSearchSuggestions = searchesFromApi.data
       .filter(item => item.suggestion && item.suggestion.toLowerCase()
       .startsWith(lowerCaseSearchQuery)).map(item => item.suggestion) 
