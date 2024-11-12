@@ -8,9 +8,9 @@ export default function InputSearches(props){
                 placeholder='Search...'
                 value={props.searchQuery}
                 onChange={props.handleInputChangeSearch}
-                onKeyDown={(e) => e.key === 'Enter' && props.getSearches()}
+                onKeyDown={(e) => e.key === 'Enter' && props.handleGetSearches()}
             />
-            <button className='button-search' onClick={props.getSearches}>Search</button>
+            <button className='button-search' onClick={props.handleGetSearches}>Search</button>
             {props.isTyping?
             (
                 <div className='search-suggestions'>

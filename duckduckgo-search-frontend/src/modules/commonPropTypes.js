@@ -10,12 +10,12 @@ const currentSearchPagePropTypes = {
 }
 const sidebarPropTypes = {
     searchHistory: PropTypes.array.isRequired,
-    postSearches: PropTypes.func.isRequired
+    handlePostSearchesData: PropTypes.func.isRequired
 }
 const inputSearchesPropTypes = {
     searchQuery: PropTypes.string.isRequired,
     suggestions: PropTypes.array.isRequired,
-    getSearches: PropTypes.func.isRequired,
+    handleGetSearches: PropTypes.func.isRequired,
     isTyping: PropTypes.bool.isRequired,
     handleInputChangeSearch: PropTypes.func.isRequired,
     handleInputClickSuggetions: PropTypes.func
