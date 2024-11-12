@@ -18,11 +18,11 @@ async function getSearchesData(searchQuery, setSearches){
   async function getSuggestionsData(partialQuery, setSuggestions, lowerCaseSearchQuery){
     try{
       if(!partialQuery.trim()) return
-      const searchesFromApi = await duckDuckGoAPI.get(`/search?q=${partialQuery}`)
-
+      const searchesFromApi = await duckDuckGoAPI.get(`/suggestion?q=${partialQuery}`)
+      console.log(searchesFromApi.data)
       const filteredSearchSuggestions = searchesFromApi.data
-      .filter(item => item.title && item.title.toLowerCase()
-      .startsWith(lowerCaseSearchQuery)).map(item => item.title.split(" ")[0]); 
+      .filter(item => item.suggestion && item.suggestion.toLowerCase()
+      .startsWith(lowerCaseSearchQuery)).map(item => item.suggestion) 
 
       setSuggestions(filteredSearchSuggestions)
     } catch (error) {
