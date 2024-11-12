@@ -1,24 +1,25 @@
 # Getting Started
-1. Clone Repository.
+### 1. Clone Repository.
 ``` bash
-$ git clone https://github.com/Jorgeniuus/duckduckgo-search-frontend.git
+git clone https://github.com/Jorgeniuus/duckduckgo-search-frontend.git
 ```
-2. Navigate to the `duckduckgo-search-frontend/duckduckgo-search-frontend` folder:
+### 2. Navigate to the `duckduckgo-search-frontend/duckduckgo-search-frontend` folder:
+- navigate into the specified directory 
 ``` bash 
-# navigate into the specified directory 
-$ cd ./duckduckgo-search-frontend/duckduckgo-search-frontend
-
-# opens vs code in current directory
-$ code .
+cd ./duckduckgo-search-frontend/duckduckgo-search-frontend
+```
+- opens vs code in current directory.
+``` bash 
+code .
 ```
 3. Run following command to install all required dependencies such as **axios**.
 ``` bash
-$ npm install
+npm install
 ```
 # Runnig the Project
 - Once you are inside the `duckduckgo-search-frontend/duckduckgo-search-frontend` folder, run following command to start the react application.
 ``` bash
-$ npm run dev
+npm run dev
 ```
 - The react application runs on port **5173** by default.
 ``` bash

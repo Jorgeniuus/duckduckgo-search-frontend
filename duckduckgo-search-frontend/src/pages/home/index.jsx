@@ -42,6 +42,12 @@ function Home() {
   };
   
   useEffect(() => {
+    if(searchQuery.length <= 0){
+      setIsTyping(false)
+    }
+  }, [searchQuery])
+
+  useEffect(() => {
     if(searches.length > 0){
       addToSearchHistory(searchQuery)           
     }
