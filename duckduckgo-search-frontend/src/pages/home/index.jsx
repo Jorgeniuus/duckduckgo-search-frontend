@@ -1,8 +1,8 @@
+import { getSearchesData , postSearchesData, getSuggestionsData } from '../../services/duckDuckGoAPI'
 import { useState, useEffect } from 'react'
 import './styleHome.css'
-import api from '../../services/api'
 import Pagination from '../../components/pagination/pagination'
-import SearchPage from '../../components/searchPage/SearchPage'
+import ContentPage from '../../components/contentPage/ContentPage'
 import Sidebar from '../../components/sidebar/Sidebar'
 import InputSearches from '../../components/inputSearches/InputSearches'
 import InputSearchHighlight from '../../components/searchHighlight/SearchHighlight'
@@ -24,48 +24,14 @@ function Home() {
   const endIndex = startIndex + paginationPerPage
   const currentSearchPage = searches.slice(startIndex, endIndex)
 
-  const lowerCaseSearch = searchQuery.toLowerCase() 
+  const lowerCaseSearchQuery = searchQuery.toLowerCase() 
 
-  async function getSearches(){
-    try{
-      if(!searchQuery.trim()) return
-      setIsTyping(false)
-      const searchesFromApi = await api.get(`/search?q=${searchQuery}`)
-
-      setSearches(searchesFromApi.data)
-      if(searchesFromApi.data.length > 0){
-        addSearch(searchQuery)           
-      }
-    } catch (error) {
-      console.error("Something went wrong when making the GET request: ", error);
+  const addToSearchHistory = (newSearch) => {
+    if(searchHistory.includes(newSearch)){
+      const index = searchHistory.indexOf(newSearch)
+      searchHistory.splice(index, 1)
     }
-  } 
-  async function getSuggestions(queryLetters){
-    try{
-      if(!queryLetters.trim()) return
-      const searchesFromApi = await api.get(`/search?q=${queryLetters}`)
 
-      const filteredSearchSuggestions = searchesFromApi.data
-      .filter(item => item.title && item.title.toLowerCase()
-      .startsWith(lowerCaseSearch)).map(item => item.title.split(" ")[0]); 
-
-      setSuggestions(filteredSearchSuggestions)
-    } catch (error) {
-      console.error("Something went wrong when making the GET request: ", error);
-    }
-  } 
-  async function postSearches(historyItem) {
-    try {
-        const response = await api.post('/search', {
-        query: historyItem,
-      });
-      setSearches(response.data); 
-    } catch (error) {
-      console.error("Something went wrong when making the POST request: ", error);
-    }
-  }
-
-  const addSearch = (newSearch) => {
     const updatedHistory = [newSearch, ...searchHistory];
 
     if (updatedHistory.length > 6) {
@@ -76,6 +42,10 @@ function Home() {
   };
   
   useEffect(() => {
+    if(searches.length > 0){
+      addToSearchHistory(searchQuery)           
+    }
+    setIsTyping(false)
     setCurrentPage(0)
   }, [searches])
 
@@ -88,14 +58,24 @@ function Home() {
   }, [])
 
   const handleInputChangeSearch = (event) => {
-    setSearchQuery(event.target.value)
-    getSuggestions(event.target.value)
+    let partialQuery = event.target.value
+    setSearchQuery(partialQuery)
+    getSuggestionsData(partialQuery, setSuggestions, lowerCaseSearchQuery)
     setIsTyping(true)
   }
   const handleInputClickSuggetions = (suggestion) => {
     setSearchQuery(suggestion)
     setIsTyping(false)
-    getSearches()
+    getSearchesData(searchQuery, setSearches)
+  }
+  
+  const handleGetSearchesData = () => {
+    getSearchesData(searchQuery, setSearches)
+  }
+
+  const handlePostSearchesData = (searchHistory) => {
+    setSearchQuery(searchHistory)
+    postSearchesData(searchHistory, setSearches)
   }
 
   return (
@@ -110,24 +90,24 @@ function Home() {
         <InputSearches 
           searchQuery={searchQuery}
           handleInputChangeSearch={handleInputChangeSearch} 
-          getSearches={getSearches} 
+          handleGetSearches={handleGetSearchesData} 
           isTyping={isTyping} 
           suggestions={suggestions} 
           handleInputClickSuggetions={handleInputClickSuggetions}
         />
         
         <div className='search-contents'>
-          <SearchPage currentSearchPage={currentSearchPage} findTerm={findTerm}>
+          <ContentPage currentSearchPage={currentSearchPage} findTerm={findTerm}>
             {<Pagination 
               pages={pages} 
               currentPage={currentPage} 
               setCurrentPage={setCurrentPage}
             />}
-          </SearchPage>
+          </ContentPage>
           
           <Sidebar 
             searchHistory={searchHistory} 
-            postSearches={postSearches}
+            handlePostSearchesData={handlePostSearchesData}
           />
         </div>
       </div>

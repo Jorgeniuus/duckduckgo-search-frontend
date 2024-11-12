@@ -1,8 +1,8 @@
 import commonPropTypes from "../../modules/commonPropTypes"
-import './styleSearchPage.css'
+import './styleContentPage.css'
 import getHighlightedText from "../../modules/getHighlightedText"
 
-const SearchPage = (props) =>{
+const ContentPage = (props) =>{
     return(
       <section className='page-searches'>
         {props.currentSearchPage.map((searchResult, index) =>(
@@ -18,5 +18,5 @@ const SearchPage = (props) =>{
     )
 }
 
-SearchPage.propTypes = commonPropTypes.currentSearchPagePropTypes  
-export default SearchPage
+ContentPage.propTypes = commonPropTypes.currentSearchPagePropTypes  
+export default ContentPage

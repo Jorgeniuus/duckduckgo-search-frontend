@@ -67,5 +67,5 @@ function InputSearchHighlight(props){
     )
 }
 
-InputSearchHighlight.propTypes = commonPropTypes.searchHighlight  
+InputSearchHighlight.propTypes = commonPropTypes.searchHighlightPropTypes  
 export default InputSearchHighlight
